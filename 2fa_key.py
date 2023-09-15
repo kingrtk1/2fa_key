@@ -24,6 +24,11 @@ def generate_totp_code(secret_key):
     except pyotp.utils.OtpError:
         return "Invalid Secret Key"
 
+try:
+    totp_code = generate_totp_code(secret_key)
+except Exception as e:
+    print("Error generating TOTP code:", str(e))
+
 while True:
     print(logo)  # Display the logo
 
