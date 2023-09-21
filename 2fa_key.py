@@ -2,6 +2,48 @@ import pyotp
 import pyperclip
 import os
 
+# Define the ASCII art text for the logo
+logo = """
+██████╗░████████╗██╗░░██╗
+██╔══██╗╚══██╔══╝██║░██╔╝
+██████╔╝░░░██║░░░█████═╝░
+██╔══██╗░░░██║░░░██╔═██╗░
+██║░░██║░░░██║░░░██║░╚██╗
+╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝
+"""
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def menu():
+    clear_screen()
+    print(logo)  # Print the logo
+    print('Menu:')
+    print('1. Generate 2Factor secret key')
+    print('2. Remove Duplicates from a file')
+    print('3. Exit')
+
+    choice = input('Enter your choice: ')
+
+    if choice == '1':
+        custom_secret_key = input('Enter your custom secret key: ')
+        totp_code, error = generate_totp_code(custom_secret_key)
+
+        if totp_code:
+            print('OTP Code:', totp_code)
+            pyperclip.copy(totp_code)
+            print('OTP Code has been copied to the clipboard.')
+        else:
+            print('Error:', error)
+    elif choice == '2':
+        rd()  # Call the function to remove duplicates
+    elif choice == '3':
+        exit()
+    else:
+        print('Invalid choice. Please enter 1, 2, or 3.')
+
+    ask_continue()
+
 def generate_totp_code(secret_key):
     secret_key = secret_key.replace(' ', '')  # Remove spaces
     secret_key = secret_key.upper()  # Convert to uppercase
@@ -14,82 +56,36 @@ def generate_totp_code(secret_key):
     except Exception as e:
         return None, str(e)  # Return no TOTP code and the error message
 
-def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
+# Function to remove duplicates from a file
+def rd():
+    try:
+        file_path = input('File Path >> ')
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        exit('File Not Found!')
 
-def menu():
+    new_path = input('New Path >> ')
+    print('Duplicate Removing....')
+
+    lines_seen = set()
+    with open(new_path, 'w') as outfile:
+        for line in lines:
+            if line not in lines_seen:
+                outfile.write(line)
+                lines_seen.add(line)
+
+    print('Duplicate Remove Successful')
+
+def ask_continue():
     while True:
-        clear_screen()
-        print('*-Programme By Mr. Beta-*')
-        print('1. Cookies Remove')
-        print('2. Number Remove')
-        print('3. Generate TOTP Code')
-        print('4. Exit')
-        choice = input('>> ')
-
-        if choice == '1':
-            rc()
-        elif choice == '2':
-            rn()
-        elif choice == '3':
-            generate_totp()
-        elif choice == '4':
-            break
+        choice = input('Do you want to continue? (y/n): ')
+        if choice.lower() == 'y':
+            menu()
+        elif choice.lower() == 'n':
+            exit()
         else:
-            print('Invalid choice. Please try again.')
-
-def rc():
-    print('Remove Cookies Selected')
-    try:
-        all_id = open(input('Input File Path > '), 'r').read().splitlines()
-    except:
-        exit('File Not Valid')
-    print('Enter Output File Name')
-    print('Example : bd69ids.txt')
-    save = input('>> ')
-    open(f'/sdcard/{save}', 'w').write('')
-    for id in all_id:
-        try:
-            uid, password, cookie = id.split('|')
-            print(uid + '|' + password)
-            open(f'/sdcard/{save}', 'a').write(uid + '|' + password + '\n')
-        except:
-            pass
-
-def rn():
-    print('Remove Number Selected')
-    try:
-        all_id = open(input('Input File Path > '), 'r').read().splitlines()
-    except:
-        exit('File Not Valid')
-    print('Enter Output File Name')
-    print('Example : bd69ids.txt')
-    save = input('>> ')
-    open(f'/sdcard/{save}', 'w').write('')
-    for id in all_id:
-        try:
-            count = len(id.split('|'))
-            if count == 4:
-                number, uid, password, cookie = id.split('|')
-                print(uid + '|' + password)
-                open(f'/sdcard/{save}', 'a').write(uid + '|' + password + '|' + cookie + '\n')
-            elif count == 3:
-                number, uid, password = id.split('|')
-                print(uid + '|' + password)
-                open(f'/sdcard/{save}', 'a').write(uid + '|' + password + '\n')
-        except:
-            pass
-
-def generate_totp():
-    secret_key = input("Enter the secret key for TOTP generation: ").strip()
-    totp_code, error = generate_totp_code(secret_key)
-
-    if totp_code:
-        print('TOTP Code:', totp_code)
-        pyperclip.copy(totp_code)
-        print('TOTP Code has been copied to the clipboard.')
-    else:
-        print('Error:', error)
+            print('Invalid choice. Please enter y or n.')
 
 if __name__ == '__main__':
-    menu()
+    menu()  # Start with the menu directly
